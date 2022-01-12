@@ -4,11 +4,17 @@ Author: Eric Woll
 '''
 
 import os
+import time
+
+# Exception Class
+class SpaceTaken(Exception):
+    '''Raised when the Square Space has already been taken.'''
+
 
 def make_board():
     spaces = {}
     for i in range(9):
-        spaces[str(i+1)] = ' '
+        spaces[str(i+1)] = i+1
     return spaces
         
 def render_board(spaces:dict):
@@ -22,17 +28,30 @@ def render_board(spaces:dict):
 def choose_space(board, user):
     square_check = False
     while not square_check:
-        render_board(board)
-        square = input(f'{user}\'s turn to choose a square (1-9): ')
-        square_check = check_board_space(board, square)
-        Clear()
+        try:
+            render_board(board)
+            square = input(f'{user}\'s turn to choose a square (1-9): ')
+            square_check = check_board_space(board, square)
+            if not square_check:
+                raise SpaceTaken
+            Clear()
+
+        except KeyError as key:
+            print(f'{key} is not a valid input, please try again.')
+            Wait(3)
+            Clear()
+        except SpaceTaken:
+            print(f'\'{square}\' is already taken, please try again.')
+            Wait(3)
+            Clear()
+
     return square
 
 def set_space(board, square, user):
     board[square] = user
 
 def check_board_space(board, square):
-    if board[square] == ' ' and (board[square] != 'X' or board[square] != 'O'):
+    if (board[square] != 'X' and board[square] != 'O'):
         return True
     return False
 
@@ -59,8 +78,10 @@ def switch_turn(current):
         return 'X'
 
 def Clear(): os.system('cls')
+def Wait(wait_time): time.sleep(wait_time)
 
 def main():
+    Clear()
     current_turn = switch_turn(' ')
     game_board = make_board()
     
