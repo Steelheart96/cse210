@@ -9,7 +9,7 @@ import time
 # Exception Class
 class SpaceTaken(Exception):
     '''Raised when the Square Space has already been taken.'''
-
+    pass
 
 def make_board():
     spaces = {}
